@@ -13,7 +13,12 @@ const port = process.env.PORT || 4000;
 connectDb();
 
 // ✅ Allow frontend on port 5173
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://mern-authfrontend.vercel.app'
+];
+
+
 
 app.use(express.json());
 app.use(cookieParser());
