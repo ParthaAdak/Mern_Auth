@@ -12,11 +12,11 @@ const port = process.env.PORT || 4000;
 // ✅ Connect to MongoDB
 connectDb();
 
-// ✅ Allow frontend on port 5173
 const allowedOrigins = [
-  'http://localhost:5173',
+  'http://localhost:5173',  // no trailing slash
   'https://mern-authfrontend.vercel.app'
 ];
+
 
 
 

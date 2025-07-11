@@ -9,30 +9,9 @@ export const AppContextProvider = (props) => {
 
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   axios.defaults.withCredentials = true;
-
-  const getAuthState = async () => {
-    try {
-      const { data } = await axios.get(backendUrl + '/api/auth/is-auth', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (data.success) {
-        setIsLoggedin(true);
-        getUserData(); // fetch user details
-      } else {
-        setIsLoggedin(false);
-        localStorage.removeItem('token');
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error.message);
-      setIsLoggedin(false);
-      localStorage.removeItem('token');
-    }
-  };
 
   const getUserData = async () => {
     try {
@@ -54,10 +33,36 @@ export const AppContextProvider = (props) => {
     }
   };
 
+  const getAuthState = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + '/api/auth/is-auth', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (data.success) {
+        setIsLoggedin(true);
+        await getUserData(); // ✅ await ensures userData loads before UI
+      } else {
+        setIsLoggedin(false);
+        localStorage.removeItem('token');
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error.message);
+      setIsLoggedin(false);
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false); // ✅ always end loading
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      getAuthState(); // check login status and fetch user
+      getAuthState();
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -75,7 +80,8 @@ export const AppContextProvider = (props) => {
     userData,
     setUserData,
     getUserData,
-    logout
+    logout,
+    loading
   };
 
   return (
