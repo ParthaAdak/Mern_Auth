@@ -13,7 +13,7 @@ const port = process.env.PORT || 4000;
 connectDb();
 const allowedOrigins = [
   'http://localhost:5173', // for local dev
-  'https://mern-auth-psi-eight.vercel.app' // your live frontend URL
+  
 ];
 
 
@@ -22,18 +22,11 @@ const allowedOrigins = [
 app.use(express.json());
 app.use(cookieParser());
 
+// ✅ Only use one CORS middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
+  origin: allowedOrigins,
+  credentials: true
 }));
-app.options('*', cors());
-
 
 // ✅ Basic test route
 app.get("/", (req, res) => res.send("API Working Fine"));
